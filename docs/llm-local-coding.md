@@ -152,3 +152,75 @@ Exclua a pasta oculta de modelos e caches mantidos no sistema e no seu usuário:
 2. Vá em Extensões (Ctrl + Shift + X).
 3. Procure por "Cline", clique no ícone de engrenagem ao lado dele e selecione "Desinstalar".
 4. Caso tenha criado arquivos no seu projeto, basta deletar os arquivos .clinerules e .clineignore da pasta.
+
+
+
+
+
+
+----------------------------
+
+
+# Guia Completo: Instalação, Uso e Desinstalação do Aider (Via Terminal/VS Code)
+
+Este guia ensina a instalar, configurar e desinstalar o Aider, o agente de IA para código mais leve e rápido para rodar 100% localmente com o Ollama no Ubuntu.
+
+---
+
+## 🔒 Vantagens do Aider no seu Setup
+- Baixíssimo uso de RAM e CPU: Não gasta recursos processando interfaces visuais complexas.
+- Zero commits automáticos: Configurado para apenas editar o código na sua tela e deixar o versionamento sob seu controle manual.
+- Foco em arquivos específicos: Permite adicionar apenas o arquivo que você quer alterar.
+
+---
+
+## 🚀 Passo 1: Instalação do Aider no Ubuntu
+
+1. Abra o terminal do seu sistema ou o terminal integrado do VS Code (Ctrl + ').
+2. Certifique-se de ter o Python 3 e o gerenciador pip instalados:
+   sudo apt update
+   sudo apt install -y python3-pip python3-venv
+
+3. Instale o Aider diretamente via pip:
+   python3 -m pip install -U aider-chat
+
+4. Verifique se a instalação foi bem-sucedida:
+   aider --version
+
+---
+
+## 🎯 Passo 2: Como Usar no Dia a Dia (Estilo Claude/Cursor)
+
+1. Abra a pasta do seu projeto no VS Code.
+2. Abra o terminal integrado do VS Code (Ctrl + ').
+3. Inicie o Aider conectando ao seu modelo leve do Ollama e desativando o commit automático:
+
+   aider --model ollama_chat/qwen2.5-coder:7b-instruct-q4_K_M --no-auto-commits
+
+4. Adicione apenas o arquivo que você deseja modificar à sessão de conversa (isso garante velocidade máxima):
+   /add src/core/events/domain-events.spec.ts
+
+5. Digite a instrução diretamente no terminal:
+   Altere todas as importações e asserções do Vitest para usar o Jest.
+
+6. O Aider aplicará as alterações direto no arquivo aberto no seu editor do VS Code.
+7. Para encerrar a sessão do Aider, digite:
+   /exit
+
+---
+
+## 🧹 Passo 3: Como Desinstalar o Aider Completamente
+
+Se desejar remover o Aider e seus arquivos de configuração da sua máquina:
+
+1. Abra o terminal do Ubuntu (Ctrl + Alt + T).
+2. Remova o pacote do Aider usando o pip:
+   python3 -m pip uninstall -y aider-chat
+
+3. Apague as pastas ocultas de configurações e histórico que ele cria no seu sistema:
+   rm -rf ~/.aider
+   rm -f .aider*
+
+4. Confirme que ele foi desinstalado tentando rodar o comando:
+   aider --version
+   (Deve retornar a mensagem "comando não encontrado").

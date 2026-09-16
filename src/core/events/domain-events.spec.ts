@@ -1,6 +1,6 @@
-import { AggregateRoot } from '../entities/aggregate-root.js';
-import type { UniqueEntityID } from '../entities/unique-entity-id.js';
-import { DomainEvents } from './domain-events.js';
+import { AggregateRoot } from '../entities/aggregate-root';
+import type { UniqueEntityID } from '../entities/unique-entity-id';
+import { DomainEvents } from './domain-events';
 import { jest } from '@jest/globals';
 
 class CustomAggregateCreated implements DomainEvents {

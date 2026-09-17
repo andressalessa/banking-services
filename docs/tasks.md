@@ -41,7 +41,7 @@
 
 ---
 
-## 📌 Passo 6: Testes Unitários de Domínio (`Vitest`)
+## 📌 Passo 6: Testes Unitários de Domínio (`Jest`)
 > **Estimativa de tempo:** 1h – 1h30
 - [ ] `digital-account.spec.ts` — Testar reserva de saldo (cenários de sucesso e `InsufficientBalanceError`), confirmação de débito e alteração de status.
 - [ ] `expense.spec.ts` — Testar fluxo de vida completo da despesa (aprovação, agendamento, liquidação e estorno).

@@ -2,7 +2,7 @@ import { AggregateRoot } from '@/core/entities/aggregate-root';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
 import { Money } from '@/core/value-objects/money';
-import { AccountStatus } from './account-status';
+import { AccountStatus } from '../enums/account-status';
 import { Member } from './member';
 import { InsufficientBalanceError } from '../errors/insufficient-balance-error';
 import { InvalidAccountStatusError } from '../errors/invalid-account-status-error';

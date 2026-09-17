@@ -5,22 +5,22 @@
 - [x] `src/core/either.ts` — Implementar `Left`, `Right` e o tipo `Either<L, R>` para Functional Error Handling.
 - [x] `src/core/unique-entity-id.ts` — Implementar classe de identificador único (wrapper para UUID).
 - [x] `src/core/entity.ts` — Implementar classe abstrata `Entity<Props>`.
-- [ ] `src/core/aggregate-root.ts` — Implementar classe abstrata `AggregateRoot<Props>`.
+- [x] `src/core/aggregate-root.ts` — Implementar classe abstrata `AggregateRoot<Props>`.
 
 ---
 
 ## 📌 Passo 2: Módulo de Conta Digital — Value Objects (`src/modules/account/domain`)
 > **Estimativa de tempo:** 45 min – 1h
-- [ ] `money.ts` — VO com validações numéricas e operações (`add`, `subtract`, `isGreaterThan`).
-- [ ] `account-holder.ts` — VO com validação de CNPJ e dados do titular.
-- [ ] `bank-identity.ts` — VO encapsulando os dados bancários na SCD (`externalAccountId`, `bankCode`, `branch`, `accountNumber`).
+- [x] `money.ts` — VO com validações numéricas e operações (`add`, `subtract`, `isGreaterThan`).
+- [x] `account-holder.ts` — VO com validação de CNPJ e dados do titular.
+- [x] `bank-identity.ts` — VO encapsulando os dados bancários na SCD (`externalAccountId`, `bankCode`, `branch`, `accountNumber`).
 
 ---
 
 ## 📌 Passo 3: Módulo de Conta Digital — Entidade e Agregado (`src/modules/account/domain`)
 > **Estimativa de tempo:** 1h – 1h30
-- [ ] `approver.ts` — Entidade interna de Aprovadores (PF, cargo, status).
-- [ ] `digital-account.ts` — Aggregate Root da Conta Digital.
+- [x] `member.ts` — Entidade interna de Membros (PF, cargo, status; admin ativo é aprovador).
+- [x] `digital-account.ts` — Aggregate Root da Conta Digital.
   - Implementar métodos: `reserveBalance`, `releaseReservedBalance`, `confirmDebit` e `changeStatus`.
 
 ---

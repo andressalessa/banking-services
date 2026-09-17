@@ -9,7 +9,10 @@
     - bankIdentity (VO) BankIdentity[externalAccountId, bankCode, branch, accountNumber]
     - balance: Money (VO)
     - reservedBalance: Money (VO)
-    - approvers (E[]) Approver[approverId, personId, role, status]
+    - members (E[]) Member[memberId, personId, role, status]
+      - role: ADMIN | COLLABORATOR
+      - status: ACTIVE | INACTIVE
+      - admin ativo é aprovador; colaborador não é
     - createdAt: Date
     - updatedAt?: Date | null
 

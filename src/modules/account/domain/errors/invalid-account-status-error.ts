@@ -1,4 +1,4 @@
-import type { AccountStatus } from '../account-status';
+import type { AccountStatus } from '../entities/account-status';
 
 export class InvalidAccountStatusError extends Error {
   constructor(current: AccountStatus, next?: AccountStatus) {

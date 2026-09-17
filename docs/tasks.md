@@ -27,15 +27,16 @@
 
 ## 📌 Passo 4: Módulo de Pagamentos — Value Objects (`src/modules/payment/domain`)
 > **Estimativa de tempo:** 45 min – 1h
-- [ ] `payee.ts` — VO do Favorecido/Recebedor.
-- [ ] `payment-details.ts` — VO com suporte a Pix, Boleto e TED.
+- [x] `payee.ts` — VO do Favorecido/Recebedor.
+- [x] `payment-details.ts` — VO com suporte a Pix, Boleto e TED.
 
 ---
 
 ## 📌 Passo 5: Módulo de Pagamentos — Entidade e Agregado (`src/modules/payment/domain`)
 > **Estimativa de tempo:** 1h – 1h30
-- [ ] `expense-approval.ts` — Entidade/Histórico de aprovações.
-- [ ] `expense.ts` — Aggregate Root da Despesa.
+- [x] `expense-approval.ts` — Entidade/Histórico de aprovações.
+- [x] `approval.ts` - VO com validações das possíveis decisões
+- [x] `expense.ts` — Aggregate Root da Despesa.
   - Implementar métodos: `approve`, `reject`, `schedule`, `pay` e `refund`.
 
 ---

@@ -4,10 +4,10 @@ import { Optional } from '@/core/types/optional';
 import { Money } from '@/core/value-objects/money';
 import { AccountStatus } from './account-status';
 import { Member } from './member';
-import { InsufficientBalanceError } from './errors/insufficient-balance-error';
-import { InvalidAccountStatusError } from './errors/invalid-account-status-error';
-import { AccountHolder } from './value-objects/account-holder';
-import { BankIdentity } from './value-objects/bank-identity';
+import { InsufficientBalanceError } from '../errors/insufficient-balance-error';
+import { InvalidAccountStatusError } from '../errors/invalid-account-status-error';
+import { AccountHolder } from '../value-objects/account-holder';
+import { BankIdentity } from '../value-objects/bank-identity';
 
 export interface DigitalAccountProps {
   holder: AccountHolder;

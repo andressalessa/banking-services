@@ -1,3 +1,6 @@
+import { InsufficientFundsError } from '../errors/insufficient-funds-error';
+import { InvalidAmountError } from '../errors/invalid-amount-error';
+
 export class Money {
   private readonly _amountInCents: number;
 
@@ -7,7 +10,7 @@ export class Money {
 
   public static create(amount: number): Money {
     if (amount < 0) {
-      throw new Error('Monetary amount cannot be negative.');
+      throw new InvalidAmountError();
     }
     const cents = Math.round(amount * 100);
     return new Money(cents);
@@ -23,7 +26,7 @@ export class Money {
 
   public sub(other: Money): Money {
     if (other._amountInCents > this._amountInCents) {
-      throw new Error('Insufficient funds for this operation.');
+      throw new InsufficientFundsError();
     }
     return new Money(this._amountInCents - other._amountInCents);
   }

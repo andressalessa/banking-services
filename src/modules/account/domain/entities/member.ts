@@ -72,4 +72,8 @@ export class Member extends Entity<MemberProps> {
   public activate(): void {
     this.props.status = MemberStatus.ACTIVE;
   }
+
+  public changeStatus(status: MemberStatus): void {
+    this.props.status = status;
+  }
 }

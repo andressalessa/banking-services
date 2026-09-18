@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { DomainEvents } from '@/core/events/domain-events';
@@ -32,6 +33,7 @@ type ScheduleExpenseResponse = Either<
  * Uses AccountBalancePort for synchronous communication with Account context
  * to ensure balance is available before scheduling.
  */
+@Injectable()
 export class ScheduleExpenseUseCase {
   constructor(
     private readonly expenseRepository: ExpenseRepository,

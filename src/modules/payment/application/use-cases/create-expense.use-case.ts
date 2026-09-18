@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, right } from '@/core/either';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Money } from '@/core/value-objects/money';
@@ -17,6 +18,7 @@ interface CreateExpenseRequest {
 
 type CreateExpenseResponse = Either<null, { expense: Expense }>;
 
+@Injectable()
 export class CreateExpenseUseCase {
   constructor(private readonly expenseRepository: ExpenseRepository) {}
 

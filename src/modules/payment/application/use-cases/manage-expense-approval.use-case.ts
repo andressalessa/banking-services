@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { DomainEvents } from '@/core/events/domain-events';
@@ -32,6 +33,7 @@ type RejectExpenseResponse = Either<ExpenseNotFoundError | Error, void>;
  * 3. Save expense
  * 4. Dispatch domain events
  */
+@Injectable()
 export class ManageExpenseApprovalUseCase {
   constructor(private readonly expenseRepository: ExpenseRepository) {}
 

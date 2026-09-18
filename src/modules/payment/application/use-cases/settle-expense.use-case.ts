@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { DomainEvents } from '@/core/events/domain-events';
@@ -30,6 +31,7 @@ type SettleExpenseResponse = Either<
  * Uses both AccountBalancePort and PaymentGatewayPort for synchronous operations.
  * PaymentGatewayPort can be implemented by any payment provider (SCD, Stripe, Adyen, etc).
  */
+@Injectable()
 export class SettleExpenseUseCase {
   constructor(
     private readonly expenseRepository: ExpenseRepository,

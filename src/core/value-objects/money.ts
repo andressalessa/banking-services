@@ -43,12 +43,34 @@ export class Money {
     return new Money(this._amountInCents - other._amountInCents);
   }
 
+  public multiply(factor: number): Money {
+    if (factor < 0) {
+      throw new InvalidAmountError();
+    }
+    return new Money(Math.round(this._amountInCents * factor));
+  }
+
+  public divide(divisor: number): Money {
+    if (divisor <= 0) {
+      throw new InvalidAmountError();
+    }
+    return new Money(Math.round(this._amountInCents / divisor));
+  }
+
   public isGreaterThan(other: Money): boolean {
     return this._amountInCents > other._amountInCents;
   }
 
   public isGreaterThanOrEqual(other: Money): boolean {
     return this._amountInCents >= other._amountInCents;
+  }
+
+  public isLessThan(other: Money): boolean {
+    return this._amountInCents < other._amountInCents;
+  }
+
+  public isLessThanOrEqual(other: Money): boolean {
+    return this._amountInCents <= other._amountInCents;
   }
 
   public equals(other: Money): boolean {

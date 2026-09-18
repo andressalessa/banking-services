@@ -1,3 +1,8 @@
+import { cnpj } from 'cpf-cnpj-validator';
+import { InvalidCnpjError } from '../errors/invalid-cnpj-error';
+import { RequiredLegalNameError } from '../errors/required-legal-name-error';
+import { RequiredTradeNameError } from '../errors/required-trade-name-error';
+
 export interface AccountHolderProps {
   cnpj: string;
   legalName: string;
@@ -16,25 +21,25 @@ export class AccountHolder {
   }
 
   public static create(props: AccountHolderProps): AccountHolder {
-    const cnpj = props.cnpj.replace(/\D/g, '');
+    const sanitizedCnpj = props.cnpj.replace(/[^\w]/g, '');
 
-    if (cnpj.length !== 14) {
-      throw new Error('Invalid CNPJ.');
+    if (!cnpj.isValid(sanitizedCnpj)) {
+      throw new InvalidCnpjError();
     }
 
     const legalName = props.legalName.trim();
     const tradeName = props.tradeName.trim();
 
     if (!legalName) {
-      throw new Error('Legal name is required.');
+      throw new RequiredLegalNameError();
     }
 
     if (!tradeName) {
-      throw new Error('Trade name is required.');
+      throw new RequiredTradeNameError();
     }
 
     return new AccountHolder({
-      cnpj,
+      cnpj: sanitizedCnpj,
       legalName,
       tradeName,
     });

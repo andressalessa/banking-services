@@ -6,11 +6,11 @@ import { AggregateRoot } from '@/core/entities/aggregate-root';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
 import { ExpenseIsNotApprovedError } from '../errors/expense-is-not-approved';
-
-export type ExpenseStatus = 'DRAFT' | 'PAID' | 'CANCELLED';
+import { ExpenseStatus } from '../enums/expense-status';
+import { ApprovalStatus, DecisionStatus } from '../enums/approval-status';
 
 export interface ExpenseProps {
-  accountId: string;
+  accountId: UniqueEntityID;
   payee: Payee;
   amount: Money;
   paymentDetails: PaymentDetails;
@@ -33,7 +33,7 @@ export class Expense extends AggregateRoot<ExpenseProps> {
       {
         ...props,
         approval: props.approval ?? Approval.create(),
-        status: props.status ?? 'DRAFT',
+        status: props.status ?? ExpenseStatus.DRAFT,
         createdAt: props.createdAt ?? new Date(),
         paidAt: props.paidAt ?? null,
       },
@@ -41,7 +41,7 @@ export class Expense extends AggregateRoot<ExpenseProps> {
     );
   }
 
-  get accountId(): string {
+  get accountId(): UniqueEntityID {
     return this.props.accountId;
   }
 
@@ -77,16 +77,14 @@ export class Expense extends AggregateRoot<ExpenseProps> {
     return this.props.createdAt;
   }
 
-  // RN: Registrar aprovação na alçada
   public approve(approverPersonId: string): void {
     this.props.approval = this.props.approval.addDecision({
       approverPersonId,
-      status: 'APPROVED',
+      status: DecisionStatus.APPROVED,
       createdAt: new Date(),
     });
   }
 
-  // RN: Registrar rejeição na alçada
   public reject(approverPersonId: string, reason: string): void {
     if (!reason || reason.trim() === '') {
       throw new Error('Rejection reason is required.');
@@ -94,32 +92,62 @@ export class Expense extends AggregateRoot<ExpenseProps> {
 
     this.props.approval = this.props.approval.addDecision({
       approverPersonId,
-      status: 'REJECTED',
+      status: DecisionStatus.REJECTED,
       rejectionReason: reason,
       createdAt: new Date(),
     });
   }
 
-  // RN: Marcar despesa como paga
   public markAsPaid(): void {
-    if (this.props.approval.status !== 'APPROVED') {
+    if (this.props.approval.status !== ApprovalStatus.APPROVED) {
       throw new ExpenseIsNotApprovedError();
     }
 
-    if (this.props.status === 'CANCELLED') {
+    if (this.props.status === ExpenseStatus.CANCELLED) {
       throw new Error('Cannot pay a cancelled expense.');
     }
 
-    this.props.status = 'PAID';
+    this.props.status = ExpenseStatus.PAID;
     this.props.paidAt = new Date() ?? null;
   }
 
-  // RN: Cancelamento da despesa
   public cancel(): void {
-    if (this.props.status === 'PAID') {
+    if (this.props.status === ExpenseStatus.PAID) {
       throw new Error('Cannot cancel an already paid expense.');
     }
 
-    this.props.status = 'CANCELLED';
+    this.props.status = ExpenseStatus.CANCELLED;
+  }
+
+  public schedule(): void {
+    if (this.props.status !== ExpenseStatus.DRAFT) {
+      throw new Error('Cannot schedule a non-draft expense.');
+    }
+
+    this.props.status = ExpenseStatus.SCHEDULED;
+  }
+
+  public refund(): void {
+    if (this.props.status !== ExpenseStatus.PAID) {
+      throw new Error('Cannot refund a non-paid expense.');
+    }
+
+    this.props.status = ExpenseStatus.REFUNDED;
+  }
+
+  public fail(): void {
+    if (this.props.status !== ExpenseStatus.SCHEDULED) {
+      throw new Error('Cannot fail a non-scheduled expense.');
+    }
+
+    this.props.status = ExpenseStatus.FAILED;
+  }
+
+  public process(): void {
+    if (this.props.status !== ExpenseStatus.SCHEDULED) {
+      throw new Error('Cannot process a non-scheduled expense.');
+    }
+
+    this.props.status = ExpenseStatus.PROCESSING;
   }
 }

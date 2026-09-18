@@ -1,5 +1,5 @@
-export type DecisionStatus = 'APPROVED' | 'REJECTED';
-export type WorkflowStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+import { DecisionStatus } from '../enums/approval-status';
+import { ApprovalStatus } from '../enums/approval-status';
 
 export interface Decision {
   approverPersonId: string;
@@ -31,7 +31,7 @@ export class Approval {
   }
 
   public addDecision(decision: Decision): Approval {
-    if (this.status !== 'PENDING') {
+    if (this.status !== ApprovalStatus.PENDING) {
       throw new Error(
         `Cannot add decision to an already ${this.status.toLowerCase()} approval process.`,
       );
@@ -52,20 +52,20 @@ export class Approval {
     });
   }
 
-  get status(): WorkflowStatus {
+  get status(): ApprovalStatus {
     const hasRejection = this.props.decisions.some(
-      (d) => d.status === 'REJECTED',
+      (d) => d.status === DecisionStatus.REJECTED,
     );
-    if (hasRejection) return 'REJECTED';
+    if (hasRejection) return DecisionStatus.REJECTED;
 
     const validApprovalsCount = this.props.decisions.filter(
-      (d) => d.status === 'APPROVED',
+      (d) => d.status === DecisionStatus.APPROVED,
     ).length;
     if (validApprovalsCount >= this.props.requiredApprovalsCount) {
-      return 'APPROVED';
+      return ApprovalStatus.APPROVED;
     }
 
-    return 'PENDING';
+    return ApprovalStatus.PENDING;
   }
 
   get requiredApprovalsCount(): number {

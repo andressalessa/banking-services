@@ -46,7 +46,7 @@ describe('ManageExpenseLifecycleUseCase', () => {
     it('should cancel scheduled expense and release balance', async () => {
       const payee = Payee.create({
         name: 'John Doe',
-        taxId: '12345678901',
+        taxId: '39053344705',
         taxIdType: 'CPF',
       });
 
@@ -87,7 +87,7 @@ describe('ManageExpenseLifecycleUseCase', () => {
     it('should cancel draft expense without releasing balance', async () => {
       const payee = Payee.create({
         name: 'Jane Doe',
-        taxId: '98765432100',
+        taxId: '52998224725',
         taxIdType: 'CPF',
       });
 
@@ -123,7 +123,7 @@ describe('ManageExpenseLifecycleUseCase', () => {
     it('should return error when trying to cancel paid expense', async () => {
       const payee = Payee.create({
         name: 'Test User',
-        taxId: '11122233344',
+        taxId: '28664221120',
         taxIdType: 'CPF',
       });
 
@@ -167,7 +167,7 @@ describe('ManageExpenseLifecycleUseCase', () => {
     it('should refund paid expense', async () => {
       const payee = Payee.create({
         name: 'Another User',
-        taxId: '55566677788',
+        taxId: '56155388130',
         taxIdType: 'CPF',
       });
 
@@ -204,7 +204,7 @@ describe('ManageExpenseLifecycleUseCase', () => {
     it('should NOT directly credit balance (handled by domain event)', async () => {
       const payee = Payee.create({
         name: 'Final User',
-        taxId: '99988877766',
+        taxId: '89933024302',
         taxIdType: 'CPF',
       });
 
@@ -240,7 +240,7 @@ describe('ManageExpenseLifecycleUseCase', () => {
     it('should return error when trying to refund non-paid expense', async () => {
       const payee = Payee.create({
         name: 'Draft User',
-        taxId: '44455566677',
+        taxId: '23810943770',
         taxIdType: 'CPF',
       });
 

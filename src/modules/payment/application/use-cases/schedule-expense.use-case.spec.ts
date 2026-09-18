@@ -55,7 +55,7 @@ describe('ScheduleExpenseUseCase', () => {
   it('should schedule expense and reserve balance', async () => {
     const payee = Payee.create({
       name: 'John Doe',
-      taxId: '12345678901',
+      taxId: '39053344705',
       taxIdType: 'CPF',
     });
 
@@ -100,7 +100,7 @@ describe('ScheduleExpenseUseCase', () => {
   it('should not schedule when insufficient balance', async () => {
     const payee = Payee.create({
       name: 'Jane Doe',
-      taxId: '98765432100',
+      taxId: '52998224725',
       taxIdType: 'CPF',
     });
 
@@ -157,7 +157,7 @@ describe('ScheduleExpenseUseCase', () => {
   it('should release balance if scheduling fails after reservation', async () => {
     const payee = Payee.create({
       name: 'Test User',
-      taxId: '11122233344',
+      taxId: '28664221120',
       taxIdType: 'CPF',
     });
 

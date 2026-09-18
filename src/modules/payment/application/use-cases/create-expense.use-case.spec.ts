@@ -21,7 +21,7 @@ describe('CreateExpenseUseCase', () => {
   it('should create expense successfully', async () => {
     const payee = Payee.create({
       name: 'John Doe',
-      taxId: '12345678901',
+      taxId: '39053344705',
       taxIdType: 'CPF',
     });
 
@@ -77,7 +77,7 @@ describe('CreateExpenseUseCase', () => {
   it('should create expense with payment details', async () => {
     const payee = Payee.create({
       name: 'Jane Doe',
-      taxId: '98765432100',
+      taxId: '52998224725',
       taxIdType: 'CPF',
     });
 
@@ -103,7 +103,7 @@ describe('CreateExpenseUseCase', () => {
   it('should persist expense in repository', async () => {
     const payee = Payee.create({
       name: 'Test User',
-      taxId: '11122233344',
+      taxId: '28664221120',
       taxIdType: 'CPF',
     });
 
@@ -135,7 +135,7 @@ describe('CreateExpenseUseCase', () => {
 
     const payee = Payee.create({
       name: 'Event Test',
-      taxId: '55566677788',
+      taxId: '56155388130',
       taxIdType: 'CPF',
     });
 

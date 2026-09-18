@@ -24,7 +24,7 @@ describe('ManageExpenseApprovalUseCase', () => {
     it('should approve expense successfully', async () => {
       const payee = Payee.create({
         name: 'John Doe',
-        taxId: '12345678901',
+        taxId: '39053344705',
         taxIdType: 'CPF',
       });
 
@@ -67,7 +67,7 @@ describe('ManageExpenseApprovalUseCase', () => {
     it('should mark approval as APPROVED when required approvals reached', async () => {
       const payee = Payee.create({
         name: 'Jane Doe',
-        taxId: '98765432100',
+        taxId: '52998224725',
         taxIdType: 'CPF',
       });
 
@@ -98,7 +98,7 @@ describe('ManageExpenseApprovalUseCase', () => {
     it('should reject expense successfully', async () => {
       const payee = Payee.create({
         name: 'Test User',
-        taxId: '11122233344',
+        taxId: '28664221120',
         taxIdType: 'CPF',
       });
 
@@ -132,7 +132,7 @@ describe('ManageExpenseApprovalUseCase', () => {
     it('should return error when rejection reason is empty', async () => {
       const payee = Payee.create({
         name: 'Another User',
-        taxId: '55566677788',
+        taxId: '56155388130',
         taxIdType: 'CPF',
       });
 
@@ -171,7 +171,7 @@ describe('ManageExpenseApprovalUseCase', () => {
     it('should mark approval as REJECTED', async () => {
       const payee = Payee.create({
         name: 'Final User',
-        taxId: '99988877766',
+        taxId: '89933024302',
         taxIdType: 'CPF',
       });
 

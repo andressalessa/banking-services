@@ -69,7 +69,7 @@ describe('SettleExpenseUseCase', () => {
   it('should settle expense and mark as paid', async () => {
     const payee = Payee.create({
       name: 'John Doe',
-      taxId: '12345678901',
+      taxId: '39053344705',
       taxIdType: 'CPF',
     });
 
@@ -121,7 +121,7 @@ describe('SettleExpenseUseCase', () => {
   it('should mark as FAILED and release balance when payment gateway fails', async () => {
     const payee = Payee.create({
       name: 'Jane Doe',
-      taxId: '98765432100',
+      taxId: '52998224725',
       taxIdType: 'CPF',
     });
 
@@ -176,7 +176,7 @@ describe('SettleExpenseUseCase', () => {
   it('should call payment gateway with correct payment details', async () => {
     const payee = Payee.create({
       name: 'Test User',
-      taxId: '11122233344',
+      taxId: '28664221120',
       taxIdType: 'CPF',
     });
 
@@ -210,7 +210,7 @@ describe('SettleExpenseUseCase', () => {
       amount: 30000,
       payee: {
         name: 'Test User',
-        taxId: '11122233344',
+        taxId: '28664221120',
       },
       paymentDetails: {
         method: 'PIX',
@@ -222,7 +222,7 @@ describe('SettleExpenseUseCase', () => {
   it('should mark as PROCESSING before calling payment gateway', async () => {
     const payee = Payee.create({
       name: 'Another User',
-      taxId: '55566677788',
+      taxId: '56155388130',
       taxIdType: 'CPF',
     });
 

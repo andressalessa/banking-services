@@ -1,12 +1,28 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
+import { DomainEvents } from '@/core/events/domain-events';
 import { Money } from '@/core/value-objects/money';
+import { ExpenseStatus } from '../enums/expense-status';
 import { ExpenseIsNotApprovedError } from '../errors/expense-is-not-approved';
+import { ExpenseApproved } from '../events/expense-approved.event';
+import { ExpenseCancelled } from '../events/expense-cancelled.event';
+import { ExpenseCreated } from '../events/expense-created.event';
+import { ExpenseFailed } from '../events/expense-failed.event';
+import { ExpensePaid } from '../events/expense-paid.event';
+import { ExpenseProcessing } from '../events/expense-processing.event';
+import { ExpenseRefunded } from '../events/expense-refunded.event';
+import { ExpenseRejected } from '../events/expense-rejected.event';
+import { ExpenseScheduled } from '../events/expense-scheduled.event';
 import { Approval } from '../value-objects/approval';
 import { Payee } from '../value-objects/payee';
 import { PaymentDetails } from '../value-objects/payment-details';
 import { Expense } from './expense';
 
 describe('Expense Aggregate Root', () => {
+  afterEach(() => {
+    DomainEvents.clearHandlers();
+    DomainEvents.clearMarkedAggregates();
+  });
+
   const makePayee = () =>
     Payee.create({
       name: 'Example Payee',
@@ -25,7 +41,7 @@ describe('Expense Aggregate Root', () => {
     overrides?: Partial<{
       accountId: UniqueEntityID;
       approval: Approval;
-      status: 'DRAFT' | 'PAID' | 'CANCELLED';
+      status: ExpenseStatus;
     }>,
   ) =>
     Expense.create({
@@ -207,5 +223,85 @@ describe('Expense Aggregate Root', () => {
       'Cannot cancel an already paid expense.',
     );
     expect(expense.status).toBe('PAID');
+  });
+
+  describe('domain events', () => {
+    it('should emit ExpenseCreated when an expense is created', () => {
+      const expense = makeExpense();
+
+      expect(expense.domainEvents).toHaveLength(1);
+      expect(expense.domainEvents[0]).toBeInstanceOf(ExpenseCreated);
+    });
+
+    it('should not emit ExpenseApproved until the required alçada is met', () => {
+      const expense = makeExpense({
+        approval: Approval.create(2),
+      });
+      expense.clearEvents();
+
+      expense.approve('manager-1');
+
+      expect(
+        expense.domainEvents.filter(
+          (event) => event instanceof ExpenseApproved,
+        ),
+      ).toHaveLength(0);
+
+      expense.approve('director-1');
+
+      expect(expense.domainEvents[0]).toBeInstanceOf(ExpenseApproved);
+    });
+
+    it('should emit ExpenseRejected when an expense is rejected', () => {
+      const expense = makeExpense();
+      expense.clearEvents();
+
+      expense.reject('approver-person-id', 'Out of budget');
+
+      expect(expense.domainEvents[0]).toBeInstanceOf(ExpenseRejected);
+    });
+
+    it('should emit lifecycle events for schedule, process, fail, pay, cancel and refund', () => {
+      const scheduled = makeExpense();
+      scheduled.approve('approver-person-id');
+      scheduled.clearEvents();
+      scheduled.schedule();
+      expect(scheduled.domainEvents[0]).toBeInstanceOf(ExpenseScheduled);
+
+      const processing = makeExpense();
+      processing.approve('approver-person-id');
+      processing.schedule();
+      processing.clearEvents();
+      processing.process();
+      expect(processing.domainEvents[0]).toBeInstanceOf(ExpenseProcessing);
+
+      const failed = makeExpense();
+      failed.approve('approver-person-id');
+      failed.schedule();
+      failed.clearEvents();
+      failed.fail('SCD timeout');
+      expect(failed.domainEvents[0]).toBeInstanceOf(ExpenseFailed);
+      expect((failed.domainEvents[0] as ExpenseFailed).failureReason).toBe(
+        'SCD timeout',
+      );
+
+      const paid = makeExpense();
+      paid.approve('approver-person-id');
+      paid.clearEvents();
+      paid.markAsPaid();
+      expect(paid.domainEvents[0]).toBeInstanceOf(ExpensePaid);
+
+      paid.clearEvents();
+      paid.refund();
+      expect(paid.domainEvents[0]).toBeInstanceOf(ExpenseRefunded);
+
+      const cancelled = makeExpense();
+      cancelled.clearEvents();
+      cancelled.cancel();
+      expect(cancelled.domainEvents[0]).toBeInstanceOf(ExpenseCancelled);
+      expect(
+        (cancelled.domainEvents[0] as ExpenseCancelled).previousStatus,
+      ).toBe(ExpenseStatus.DRAFT);
+    });
   });
 });

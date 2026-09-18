@@ -29,7 +29,7 @@ class CustomAggregate extends AggregateRoot<null> {
 
 describe('domain events', () => {
   it('should be able to dispatch and listen to events', async () => {
-    const callbackSpy = jest.fn();
+    const callbackSpy = jest.fn<(event: DomainEvent) => void>();
 
     DomainEvents.register(callbackSpy, CustomAggregateCreated.name);
 

@@ -233,15 +233,14 @@ describe('PaymentDetails', () => {
       });
 
       it('should accept email exactly at 77 characters limit', () => {
-        // 77 characters total: 64 + @ + 12 = 77
-        const email = 'a'.repeat(64) + '@' + 'b'.repeat(11) + '.com'; // 64 + 1(@) + 11 + 1(.) + 3 = 80... wrong
-        // Let's recalculate: local(64) + @ + domain(11) + .com = 64 + 1 + 7 + 4 = 76
-        // Need one more: local(64) + @ + domain(12) = 64 + 1 + 12 = 77
-        const correctEmail = 'a'.repeat(64) + '@example.comm'; // 64 + 1 + 12 = 77
+        // 77 characters total calculation:
+        // First attempt: local(64) + @ + domain(11) + .com = 64 + 1 + 7 + 4 = 76
+        // Correct: local(64) + @ + domain(12) = 64 + 1 + 12 = 77
+        const email = 'a'.repeat(64) + '@example.comm'; // 64 + 1 + 12 = 77
         expect(() =>
           PaymentDetails.create({
             method: 'PIX',
-            pixKey: correctEmail,
+            pixKey: email,
             pixKeyType: 'EMAIL',
           }),
         ).not.toThrow();

@@ -98,7 +98,7 @@ describe('Expense Aggregate Root', () => {
 
   it('should keep approval PENDING until the required approvals count is met', () => {
     const expense = makeExpense({
-      approval: Approval.create(2),
+      approval: Approval.create({ requiredApprovalsCount: 2 }),
     });
 
     expense.approve('manager-1');
@@ -109,7 +109,7 @@ describe('Expense Aggregate Root', () => {
 
   it('should allow payment after all required approvals', () => {
     const expense = makeExpense({
-      approval: Approval.create(2),
+      approval: Approval.create({ requiredApprovalsCount: 2 }),
     });
 
     expense.approve('manager-1');
@@ -156,7 +156,7 @@ describe('Expense Aggregate Root', () => {
 
   it('should not allow the same approver to decide twice', () => {
     const expense = makeExpense({
-      approval: Approval.create(2),
+      approval: Approval.create({ requiredApprovalsCount: 2 }),
     });
 
     expense.approve('manager-1');
@@ -235,7 +235,7 @@ describe('Expense Aggregate Root', () => {
 
     it('should not emit ExpenseApproved until the required alçada is met', () => {
       const expense = makeExpense({
-        approval: Approval.create(2),
+        approval: Approval.create({ requiredApprovalsCount: 2 }),
       });
       expense.clearEvents();
 

@@ -2,12 +2,12 @@ import { Approval } from '../value-objects/approval';
 
 describe('Approval Value Object', () => {
   it('should start with PENDING status by default', () => {
-    const approval = Approval.create(1);
+    const approval = Approval.create({ requiredApprovalsCount: 1 });
     expect(approval.status).toBe('PENDING');
   });
 
   it('should transition to APPROVED when required approvals count is met', () => {
-    const approval = Approval.create(1);
+    const approval = Approval.create({ requiredApprovalsCount: 1 });
     const approved = approval.addDecision({
       approverPersonId: 'person-1',
       status: 'APPROVED',
@@ -19,7 +19,7 @@ describe('Approval Value Object', () => {
 
   it('should handle multi-level approval thresholds correctly', () => {
     // Exige 2 aprovações (ex: > R$ 10.000)
-    const approval = Approval.create(2);
+    const approval = Approval.create({ requiredApprovalsCount: 2 });
 
     const step1 = approval.addDecision({
       approverPersonId: 'manager-1',
@@ -37,7 +37,7 @@ describe('Approval Value Object', () => {
   });
 
   it('should reject immediately if any approver rejects', () => {
-    const approval = Approval.create(2);
+    const approval = Approval.create({ requiredApprovalsCount: 2 });
     const rejected = approval.addDecision({
       approverPersonId: 'manager-1',
       status: 'REJECTED',
@@ -49,7 +49,7 @@ describe('Approval Value Object', () => {
   });
 
   it('should prevent the same approver from deciding twice', () => {
-    const approval = Approval.create(2);
+    const approval = Approval.create({ requiredApprovalsCount: 2 });
     const step1 = approval.addDecision({
       approverPersonId: 'manager-1',
       status: 'APPROVED',

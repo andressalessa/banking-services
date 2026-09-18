@@ -251,8 +251,11 @@ export class Expense extends AggregateRoot<ExpenseProps> {
   }
 
   public fail(failureReason?: string): void {
-    if (this.props.status !== ExpenseStatus.SCHEDULED) {
-      throw new Error('Cannot fail a non-scheduled expense.');
+    if (
+      this.props.status !== ExpenseStatus.SCHEDULED &&
+      this.props.status !== ExpenseStatus.PROCESSING
+    ) {
+      throw new Error('Cannot fail a non-scheduled or non-processing expense.');
     }
 
     this.props.status = ExpenseStatus.FAILED;

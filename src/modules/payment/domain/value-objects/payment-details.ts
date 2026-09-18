@@ -269,6 +269,45 @@ export class PaymentDetails {
     return this.props;
   }
 
+  /**
+   * Helper method to create PIX payment with automatic key type detection
+   */
+  public static createPix(pixKey: string): PaymentDetails {
+    const trimmed = pixKey.trim();
+    let pixKeyType: 'CPF' | 'CNPJ' | 'EMAIL' | 'PHONE' | 'RANDOM';
+
+    // Detect key type based on format
+    if (trimmed.startsWith('+55')) {
+      pixKeyType = 'PHONE';
+    } else if (trimmed.includes('@')) {
+      pixKeyType = 'EMAIL';
+    } else if (/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(trimmed)) {
+      pixKeyType = 'RANDOM';
+    } else {
+      const digits = trimmed.replace(/\D/g, '');
+      if (digits.length === 11) {
+        pixKeyType = 'CPF';
+      } else if (digits.length === 14) {
+        pixKeyType = 'CNPJ';
+      } else {
+        throw new Error('Cannot detect PIX key type. Use create() with explicit pixKeyType.');
+      }
+    }
+
+    return PaymentDetails.create({
+      method: 'PIX',
+      pixKey: trimmed,
+      pixKeyType,
+    });
+  }
+
+  get pixKey(): string | undefined {
+    if (this.props.method === 'PIX') {
+      return this.props.pixKey;
+    }
+    return undefined;
+  }
+
   public isPix(): boolean {
     return this.props.method === 'PIX';
   }

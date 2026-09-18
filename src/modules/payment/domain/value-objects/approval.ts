@@ -21,12 +21,11 @@ export class Approval {
   }
 
   public static create(
-    requiredApprovalsCount = 1,
-    decisions: Decision[] = [],
+    props?: { requiredApprovalsCount?: number; decisions?: Decision[] },
   ): Approval {
     return new Approval({
-      requiredApprovalsCount,
-      decisions,
+      requiredApprovalsCount: props?.requiredApprovalsCount ?? 1,
+      decisions: props?.decisions ?? [],
     });
   }
 

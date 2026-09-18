@@ -1,114 +1,280 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Banking Services
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+> **Sistema de Contas Digitais e Pagamentos** — Demonstração de arquitetura moderna com migração de Modular Monolith para Microsserviços.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📋 Descrição
 
-## Description
+Projeto de estudo implementando um sistema bancário simplificado com:
+- **Contas Digitais** (gestão de saldo, membros, aprovadores)
+- **Pagamentos** (despesas, alçadas de aprovação, integração com SCD)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+**Arquitetura:** Clean Architecture + Domain-Driven Design (DDD)  
+**Stack:** NestJS, TypeScript, PostgreSQL, RabbitMQ, Temporal.io  
+**Objetivo:** Demonstrar evolução arquitetural de Monólito → Microsserviços
 
-## Project setup
+---
+
+## 🏗️ Arquitetura
+
+### Fase 1: Modular Monolith (Atual)
+Aplicação única com Bounded Contexts estritamente isolados:
+- `src/modules/account` — Contexto de Conta Digital
+- `src/modules/payment` — Contexto de Pagamentos
+- `src/core` — Shared Kernel (entidades base, VOs, eventos)
+
+### Fase 2: Microsserviços (Planejado)
+Decomposição em serviços independentes:
+- **Account Service** (Port 3001) — Gestão de contas e saldo
+- **Payment Service** (Port 3002) — Gestão de despesas e pagamentos
+- **API Gateway** — Roteamento e cross-cutting concerns
+- **RabbitMQ** — Comunicação assíncrona (eventos)
+- **Temporal.io** — Orquestração de sagas distribuídas
+
+---
+
+## 📚 Documentação
+
+### Documentação Técnica
+
+- **[Tasks (Checklist de Implementação)](docs/tasks.md)** — Passo a passo da Fase 1 e Fase 2
+- **[Domain Structure (DDD)](docs/ddd-structure.md)** — Estrutura de domínio, agregados, entities, VOs
+- **[Requirements (RF, RNF, RN)](docs/requirements.md)** — Requisitos funcionais, não-funcionais e regras de negócio
+- **[Architecture Notes](docs/architecture-notes.md)** — Observações, inconsistências e sugestões de evolução
+- **[Microservices Strategy](docs/microservices-strategy.md)** — Estratégia detalhada de migração
+- **[Architecture Evolution](docs/architecture-evolution.md)** — Resumo executivo (ideal para PDI)
+
+### Outros Documentos
+
+- **[CommonJS vs Node/Nest](docs/commonjs-vs-nodenest.md)** — Notas técnicas
+
+---
+
+## 🎯 Funcionalidades (Requisitos Funcionais)
+
+### Contas Digitais (Account BC)
+- **RF 01:** Criar nova conta digital com aprovadores (PF)
+- **RF 02:** Alterar status da conta (Ativar | Bloquear | Encerrar)
+
+### Pagamentos (Payment BC)
+- **RF 03:** Criar despesa (PENDING)
+- **RF 04:** Aprovar ou Rejeitar despesa (alçada de aprovação)
+- **RF 05:** Agendar pagamento (reserva saldo na conta)
+- **RF 06:** Processar liquidação (débito confirmado pela SCD)
+- **RF 07:** Cancelar ou Estornar despesa (devolve saldo)
+
+---
+
+## 🚀 Tecnologias
+
+### Core
+- **NestJS** — Framework backend
+- **TypeScript** — Linguagem tipada
+- **PostgreSQL** — Banco relacional (valores monetários em `NUMERIC(15, 2)`)
+
+### Mensageria e Orquestração
+- **RabbitMQ** — Message broker (eventos entre contextos)
+- **Temporal.io** — Saga pattern e workflows de longa duração
+
+### Testes
+- **Jest** — Framework de testes (co-locado: `*.spec.ts`)
+
+### Infraestrutura (Fase 2)
+- **Docker** + **Docker Compose** — Containerização
+- **NGINX** — API Gateway
+- **OpenTelemetry** + **Jaeger** — Distributed Tracing
+- **Prometheus** + **Grafana** — Métricas
+- **ELK Stack** — Logging centralizado
+
+---
+
+## 🎓 Conhecimentos Demonstrados (PDI)
+
+✅ **Domain-Driven Design (DDD):**
+- Bounded Contexts
+- Aggregates, Entities, Value Objects
+- Domain Events
+
+✅ **Clean Architecture:**
+- Separação em camadas (Domain → Application → Infrastructure)
+- Dependency Inversion Principle
+- Either Pattern (functional error handling)
+
+✅ **Microsserviços:**
+- Decomposição de monólito
+- Database per Service
+- API Gateway, Service Discovery
+- Event-Driven Architecture
+- Saga Pattern (Temporal.io)
+
+✅ **Resiliência:**
+- Circuit Breaker
+- Retry com backoff exponencial
+- Timeout e bulkhead
+
+✅ **Observabilidade:**
+- Distributed Tracing
+- Métricas (RED: Rate, Errors, Duration)
+- Logging estruturado
+
+✅ **DevOps:**
+- Containerização (Docker)
+- CI/CD por serviço
+- Infrastructure as Code
+
+---
+
+## ⚙️ Setup do Projeto
+
+### Pré-requisitos
+- Node.js 20+
+- npm ou yarn
+- Docker + Docker Compose (para infra)
+
+### Instalação
 
 ```bash
-$ npm install
+# Instalar dependências
+npm install
+
+# Configurar variáveis de ambiente
+cp .env.example .env
 ```
 
-## Compile and run the project
+### Executar Aplicação
 
 ```bash
-# development
-$ npm run start
+# Desenvolvimento (watch mode)
+npm run start:dev
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# Produção
+npm run start:prod
 ```
 
-## Run tests
+### Executar Testes
 
 ```bash
-# unit tests
-$ npm run test
+# Testes unitários
+npm run test
 
-# e2e tests
-$ npm run test:e2e
+# Testes com cobertura
+npm run test:cov
 
-# test coverage
-$ npm run test:cov
+# Testes e2e
+npm run test:e2e
+
+# Testes em watch mode
+npm run test:watch
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Infraestrutura (Docker Compose)
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Subir PostgreSQL, RabbitMQ, Temporal
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f
+
+# Parar serviços
+docker-compose down
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 📊 Estrutura do Projeto
 
-## Observability
+```
+banking-services/
+├── src/
+│   ├── core/                      # Shared Kernel
+│   │   ├── entities/              # Entity, AggregateRoot, UniqueEntityID
+│   │   ├── value-objects/         # Money
+│   │   ├── events/                # DomainEvent, DomainEvents
+│   │   └── either.ts              # Either<L, R> (functional error handling)
+│   ├── modules/
+│   │   ├── account/               # Bounded Context: Account
+│   │   │   ├── domain/
+│   │   │   │   ├── entities/      # DigitalAccount (AR), Member (E)
+│   │   │   │   ├── value-objects/ # AccountHolder, BankIdentity
+│   │   │   │   └── enums/         # AccountStatus
+│   │   │   ├── application/       # Use Cases (futuro)
+│   │   │   └── infrastructure/    # Repositórios, HTTP (futuro)
+│   │   └── payment/               # Bounded Context: Payment
+│   │       ├── domain/
+│   │       │   ├── entities/      # Expense (AR)
+│   │       │   └── value-objects/ # Payee, PaymentDetails, Approval
+│   │       ├── application/       # Use Cases (futuro)
+│   │       └── infrastructure/    # Repositórios, HTTP (futuro)
+│   └── main.ts
+├── docs/
+│   ├── tasks.md                   # Checklist de implementação
+│   ├── ddd-structure.md           # Estrutura DDD (Bounded Contexts, Aggregates, VOs)
+│   ├── requirements.md            # RF, RNF, RN (Requisitos e Regras de Negócio)
+│   ├── architecture-notes.md      # Observações, inconsistências e sugestões
+│   ├── microservices-strategy.md  # Estratégia de migração
+│   ├── architecture-evolution.md  # Resumo executivo
+│   └── glossary.md                # Glossário técnico
+├── test/                          # Testes e2e
+└── docker-compose.yml             # Infraestrutura local
+```
 
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
+---
 
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
+## 🎯 Roadmap
 
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
+### ✅ Concluído
+- [x] Core (Entity, AggregateRoot, UniqueEntityID, Either, Money)
+- [x] Domain Events (infraestrutura)
+- [x] Account BC: DigitalAccount, Member, AccountHolder, BankIdentity
+- [x] Payment BC: Expense, Payee, PaymentDetails, Approval
+- [x] Testes parciais (expense.spec.ts, money.spec.ts, approval.spec.ts)
+- [x] Documentação completa de microsserviços
 
-## Resources
+### 🚧 Em Progresso (Fase 1)
+- [ ] Domain Events (emitir nos ARs)
+- [ ] Completar ciclo de pagamento (SCHEDULED, IN_PROCESSING, FAILED, REFUNDED)
+- [ ] Use Cases (Application layer)
+- [ ] Repositórios (PostgreSQL + ORM)
+- [ ] HTTP Controllers (NestJS)
+- [ ] Testes completos (unit, integration, e2e)
 
-Check out a few resources that may come in handy when working with NestJS:
+### 📅 Planejado (Fase 2)
+- [ ] Database per Service
+- [ ] Extrair Account Service
+- [ ] Extrair Payment Service
+- [ ] API Gateway (NGINX)
+- [ ] RabbitMQ (eventos entre serviços)
+- [ ] Temporal.io (Sagas distribuídas)
+- [ ] Observabilidade (Jaeger, Prometheus, Grafana)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observer](https://observer.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## 📚 Referências
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Livros
+- Eric Evans — "Domain-Driven Design" (2003)
+- Robert C. Martin — "Clean Architecture" (2017)
+- Sam Newman — "Building Microservices" (2ª ed, 2021)
+- Chris Richardson — "Microservices Patterns" (2018)
+- Michael T. Nygard — "Release It!" (2ª ed, 2018)
 
-## Stay in touch
+### Artigos
+- Martin Fowler — [Strangler Fig Application](https://martinfowler.com/bliki/StranglerFigApplication.html)
+- Martin Fowler — [Circuit Breaker](https://martinfowler.com/bliki/CircuitBreaker.html)
+- Chris Richardson — [Saga Pattern](https://microservices.io/patterns/data/saga.html)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Recursos
+- [Microservices.io](https://microservices.io/) — Catálogo de padrões
+- [Temporal.io Docs](https://docs.temporal.io/) — Workflows e sagas
+- [OpenTelemetry](https://opentelemetry.io/) — Observabilidade
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 👤 Autor
+
+**Andressa Lessa**  
+Projeto de estudo — Demonstração de conhecimento em arquitetura de microsserviços (PDI)
+
+---
+
+## 📄 Licença
+
+Este é um projeto educacional para fins de estudo e demonstração técnica.

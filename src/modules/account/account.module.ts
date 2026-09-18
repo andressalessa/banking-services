@@ -7,6 +7,10 @@ import { CreateDigitalAccountUseCase } from './application/use-cases/create-digi
 // Unified Subscriber reacting to Payment events
 import { OnExpenseEvents } from './application/subscribers/on-expense-events.subscriber';
 
+// Adapter implementing AccountBalancePort for Payment module
+import { AccountBalanceAdapter } from './infrastructure/adapters/account-balance.adapter';
+import { AccountBalancePort } from '../payment/application/ports/account-balance.port';
+
 @Module({
   providers: [
     // Use Cases
@@ -17,6 +21,12 @@ import { OnExpenseEvents } from './application/subscribers/on-expense-events.sub
 
     // Event Subscriber (Account reacts to Payment)
     OnExpenseEvents,
+
+    // Port implementation for Payment module integration
+    {
+      provide: AccountBalancePort,
+      useClass: AccountBalanceAdapter,
+    },
   ],
   exports: [
     // Use cases exported for tests/other contexts
@@ -24,6 +34,9 @@ import { OnExpenseEvents } from './application/subscribers/on-expense-events.sub
     ChangeDigitalAccountStatusUseCase,
     ManageAccountBalanceUseCase,
     ManageAccountMembersUseCase,
+
+    // Port exported for Payment module to use
+    AccountBalancePort,
   ],
 })
 export class AccountModule {}

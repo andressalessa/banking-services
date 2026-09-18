@@ -1,6 +1,16 @@
+import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error('DATABASE_URL is not set.');
+}
+
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString }),
+});
 
 const ACCOUNT_ID = '550e8400-e29b-41d4-a716-446655440000';
 const ADMIN_MEMBER_ID = '550e8400-e29b-41d4-a716-446655440001';

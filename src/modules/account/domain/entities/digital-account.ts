@@ -10,6 +10,7 @@ import { InvalidAccountStatusError } from '../errors/invalid-account-status-erro
 import { DuplicateMemberError } from '../errors/duplicate-member-error';
 import { MemberNotFoundError } from '../errors/member-not-found-error';
 import { CannotRemoveLastApproverError } from '../errors/cannot-remove-last-approver-error';
+import { AccountWithoutAdminError } from '../errors/account-without-admin-error';
 import { AccountHolder } from '../value-objects/account-holder';
 import { BankIdentity } from '../value-objects/bank-identity';
 import { AccountCreated } from '../events/account-created.event';
@@ -135,6 +136,18 @@ export class DigitalAccount extends AggregateRoot<DigitalAccountProps> {
 
   get updatedAt() {
     return this.props.updatedAt ?? null;
+  }
+
+  public activate(): void {
+    const hasActiveAdmin = this.props.members.some(
+      (member) => member.role === 'ADMIN' && member.isActive,
+    );
+
+    if (!hasActiveAdmin) {
+      throw new AccountWithoutAdminError();
+    }
+
+    this.props.status = AccountStatus.ACTIVE;
   }
 
   public reserveBalance(amount: Money, reason = 'balance-reserved') {

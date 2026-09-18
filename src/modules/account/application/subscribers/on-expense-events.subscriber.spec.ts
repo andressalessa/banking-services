@@ -1,10 +1,7 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { DomainEvents } from '@/core/events/domain-events';
 import { Money } from '@/core/value-objects/money';
-import { ConfirmAccountDebitUseCase } from '@/modules/account/application/use-cases/confirm-account-debit.use-case';
-import { CreditAccountBalanceUseCase } from '@/modules/account/application/use-cases/credit-account-balance.use-case';
-import { ReleaseAccountBalanceUseCase } from '@/modules/account/application/use-cases/release-account-balance.use-case';
-import { ReserveAccountBalanceUseCase } from '@/modules/account/application/use-cases/reserve-account-balance.use-case';
+import { ManageAccountBalanceUseCase } from '@/modules/account/application/use-cases/manage-account-balance.use-case';
 import { InMemoryDigitalAccountRepository } from '@/modules/account/infrastructure/repositories/in-memory-digital-account.repository';
 import { DigitalAccount } from '@/modules/account/domain/entities/digital-account';
 import { Member, MemberRole } from '@/modules/account/domain/entities/member';
@@ -81,12 +78,7 @@ describe('OnExpenseEvents', () => {
 
   describe('handleExpenseScheduled', () => {
     it('should reserve balance when an expense is scheduled', async () => {
-      new OnExpenseEvents(
-        new ReserveAccountBalanceUseCase(accounts),
-        new ConfirmAccountDebitUseCase(accounts),
-        new ReleaseAccountBalanceUseCase(accounts),
-        new CreditAccountBalanceUseCase(accounts),
-      );
+      new OnExpenseEvents(new ManageAccountBalanceUseCase(accounts));
 
       const expense = makeExpense();
       expense.approve('approver-person-id');
@@ -105,12 +97,7 @@ describe('OnExpenseEvents', () => {
       account.clearEvents();
       await accounts.save(account);
 
-      new OnExpenseEvents(
-        new ReserveAccountBalanceUseCase(accounts),
-        new ConfirmAccountDebitUseCase(accounts),
-        new ReleaseAccountBalanceUseCase(accounts),
-        new CreditAccountBalanceUseCase(accounts),
-      );
+      new OnExpenseEvents(new ManageAccountBalanceUseCase(accounts));
 
       const expense = makeExpense();
       expense.approve('approver-person-id');
@@ -129,12 +116,7 @@ describe('OnExpenseEvents', () => {
       account.clearEvents();
       await accounts.save(account);
 
-      new OnExpenseEvents(
-        new ReserveAccountBalanceUseCase(accounts),
-        new ConfirmAccountDebitUseCase(accounts),
-        new ReleaseAccountBalanceUseCase(accounts),
-        new CreditAccountBalanceUseCase(accounts),
-      );
+      new OnExpenseEvents(new ManageAccountBalanceUseCase(accounts));
 
       const expense = makeExpense();
       expense.approve('approver-person-id');
@@ -154,12 +136,7 @@ describe('OnExpenseEvents', () => {
       account.clearEvents();
       await accounts.save(account);
 
-      new OnExpenseEvents(
-        new ReserveAccountBalanceUseCase(accounts),
-        new ConfirmAccountDebitUseCase(accounts),
-        new ReleaseAccountBalanceUseCase(accounts),
-        new CreditAccountBalanceUseCase(accounts),
-      );
+      new OnExpenseEvents(new ManageAccountBalanceUseCase(accounts));
 
       const expense = makeExpense();
       expense.approve('approver-person-id');
@@ -178,12 +155,7 @@ describe('OnExpenseEvents', () => {
       account.clearEvents();
       await accounts.save(account);
 
-      new OnExpenseEvents(
-        new ReserveAccountBalanceUseCase(accounts),
-        new ConfirmAccountDebitUseCase(accounts),
-        new ReleaseAccountBalanceUseCase(accounts),
-        new CreditAccountBalanceUseCase(accounts),
-      );
+      new OnExpenseEvents(new ManageAccountBalanceUseCase(accounts));
 
       const expense = makeExpense();
       expense.cancel();
@@ -195,12 +167,7 @@ describe('OnExpenseEvents', () => {
 
   describe('handleExpenseRefunded', () => {
     it('should credit balance when an expense is refunded', async () => {
-      new OnExpenseEvents(
-        new ReserveAccountBalanceUseCase(accounts),
-        new ConfirmAccountDebitUseCase(accounts),
-        new ReleaseAccountBalanceUseCase(accounts),
-        new CreditAccountBalanceUseCase(accounts),
-      );
+      new OnExpenseEvents(new ManageAccountBalanceUseCase(accounts));
 
       const expense = makeExpense();
       expense.approve('approver-person-id');

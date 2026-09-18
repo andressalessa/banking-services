@@ -50,6 +50,10 @@ export class Member extends Entity<MemberProps> {
     return this.props.createdAt;
   }
 
+  public isActive(): boolean {
+    return this.props.status === MemberStatus.ACTIVE;
+  }
+
   public isApprover(): boolean {
     return (
       this.props.role === MemberRole.ADMIN &&

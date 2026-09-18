@@ -99,9 +99,9 @@ describe('DigitalAccount Aggregate Root', () => {
 
     expect(account.status).toBe(AccountStatus.VALIDATED);
     expect(account.domainEvents[0]).toBeInstanceOf(AccountStatusChanged);
-    expect((account.domainEvents[0] as AccountStatusChanged).previousStatus).toBe(
-      AccountStatus.PENDING,
-    );
+    expect(
+      (account.domainEvents[0] as AccountStatusChanged).previousStatus,
+    ).toBe(AccountStatus.PENDING);
     expect((account.domainEvents[0] as AccountStatusChanged).newStatus).toBe(
       AccountStatus.VALIDATED,
     );

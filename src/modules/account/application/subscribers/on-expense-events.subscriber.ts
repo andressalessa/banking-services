@@ -10,11 +10,8 @@ import { ExpenseCancelled } from '@/modules/payment/domain/events/expense-cancel
 import { ExpenseRefunded } from '@/modules/payment/domain/events/expense-refunded.event';
 import { ExpenseStatus } from '@/modules/payment/domain/enums/expense-status';
 
-// Import Account use cases (same context)
-import { ReserveAccountBalanceUseCase } from '../use-cases/reserve-account-balance.use-case';
-import { ConfirmAccountDebitUseCase } from '../use-cases/confirm-account-debit.use-case';
-import { ReleaseAccountBalanceUseCase } from '../use-cases/release-account-balance.use-case';
-import { CreditAccountBalanceUseCase } from '../use-cases/credit-account-balance.use-case';
+// Import Account use case (same context)
+import { ManageAccountBalanceUseCase } from '../use-cases/manage-account-balance.use-case';
 
 /**
  * Unified Event Subscriber for all Expense lifecycle events
@@ -29,10 +26,7 @@ import { CreditAccountBalanceUseCase } from '../use-cases/credit-account-balance
  */
 export class OnExpenseEvents implements EventHandler {
   constructor(
-    private readonly reserveAccountBalance: ReserveAccountBalanceUseCase,
-    private readonly confirmAccountDebit: ConfirmAccountDebitUseCase,
-    private readonly releaseAccountBalance: ReleaseAccountBalanceUseCase,
-    private readonly creditAccountBalance: CreditAccountBalanceUseCase,
+    private readonly manageAccountBalance: ManageAccountBalanceUseCase,
   ) {
     this.setupSubscriptions();
   }
@@ -68,7 +62,7 @@ export class OnExpenseEvents implements EventHandler {
    * When expense is scheduled → Reserve balance
    */
   private async handleExpenseScheduled(event: ExpenseScheduled): Promise<void> {
-    const result = await this.reserveAccountBalance.execute({
+    const result = await this.manageAccountBalance.reserveBalance({
       accountId: event.accountId,
       amountInCents: event.amount.valueInCents,
       reason: `expense:${event.expenseId}`,
@@ -86,7 +80,7 @@ export class OnExpenseEvents implements EventHandler {
    * When expense is paid → Confirm debit
    */
   private async handleExpensePaid(event: ExpensePaid): Promise<void> {
-    const result = await this.confirmAccountDebit.execute({
+    const result = await this.manageAccountBalance.confirmDebit({
       accountId: event.accountId,
       amountInCents: event.amount.valueInCents,
       reason: `expense-paid:${event.expenseId}`,
@@ -104,7 +98,7 @@ export class OnExpenseEvents implements EventHandler {
    * When expense fails → Release reserved balance
    */
   private async handleExpenseFailed(event: ExpenseFailed): Promise<void> {
-    const result = await this.releaseAccountBalance.execute({
+    const result = await this.manageAccountBalance.releaseBalance({
       accountId: event.accountId,
       amountInCents: event.amount.valueInCents,
       reason: `expense-failed:${event.expenseId}`,
@@ -121,9 +115,7 @@ export class OnExpenseEvents implements EventHandler {
   /**
    * When expense is cancelled → Release reserved balance (if was scheduled/processing)
    */
-  private async handleExpenseCancelled(
-    event: ExpenseCancelled,
-  ): Promise<void> {
+  private async handleExpenseCancelled(event: ExpenseCancelled): Promise<void> {
     const hadReservedBalance =
       event.previousStatus === ExpenseStatus.SCHEDULED ||
       event.previousStatus === ExpenseStatus.PROCESSING;
@@ -132,7 +124,7 @@ export class OnExpenseEvents implements EventHandler {
       return;
     }
 
-    const result = await this.releaseAccountBalance.execute({
+    const result = await this.manageAccountBalance.releaseBalance({
       accountId: event.accountId,
       amountInCents: event.amount.valueInCents,
       reason: `expense-cancelled:${event.expenseId}`,
@@ -150,7 +142,7 @@ export class OnExpenseEvents implements EventHandler {
    * When expense is refunded → Credit balance back
    */
   private async handleExpenseRefunded(event: ExpenseRefunded): Promise<void> {
-    const result = await this.creditAccountBalance.execute({
+    const result = await this.manageAccountBalance.creditBalance({
       accountId: event.accountId,
       amountInCents: event.amount.valueInCents,
       reason: `expense-refunded:${event.expenseId}`,

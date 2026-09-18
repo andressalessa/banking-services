@@ -9,6 +9,10 @@ export class InMemoryDigitalAccountRepository extends DigitalAccountRepository {
     return this.items.find((account) => account.id.equals(id)) ?? null;
   }
 
+  async create(account: DigitalAccount): Promise<void> {
+    this.items.push(account);
+  }
+
   async save(account: DigitalAccount): Promise<void> {
     const index = this.items.findIndex((item) => item.id.equals(account.id));
 

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfirmAccountDebitUseCase } from './application/use-cases/confirm-account-debit.use-case';
-import { CreditAccountBalanceUseCase } from './application/use-cases/credit-account-balance.use-case';
-import { ReleaseAccountBalanceUseCase } from './application/use-cases/release-account-balance.use-case';
-import { ReserveAccountBalanceUseCase } from './application/use-cases/reserve-account-balance.use-case';
+import { ManageAccountBalanceUseCase } from './application/use-cases/manage-account-balance.use-case';
+import { ChangeDigitalAccountStatusUseCase } from './application/use-cases/change-digital-account-status';
+import { ManageAccountMembersUseCase } from './application/use-cases/manage-account-members.use-case';
+import { CreateDigitalAccountUseCase } from './application/use-cases/create-digital-account';
 
 // Unified Subscriber reacting to Payment events
 import { OnExpenseEvents } from './application/subscribers/on-expense-events.subscriber';
@@ -10,20 +10,20 @@ import { OnExpenseEvents } from './application/subscribers/on-expense-events.sub
 @Module({
   providers: [
     // Use Cases
-    ReserveAccountBalanceUseCase,
-    ReleaseAccountBalanceUseCase,
-    ConfirmAccountDebitUseCase,
-    CreditAccountBalanceUseCase,
+    CreateDigitalAccountUseCase,
+    ChangeDigitalAccountStatusUseCase,
+    ManageAccountBalanceUseCase,
+    ManageAccountMembersUseCase,
 
     // Event Subscriber (Account reacts to Payment)
     OnExpenseEvents,
   ],
   exports: [
-    // Only use cases are exported (for tests/other contexts)
-    ReserveAccountBalanceUseCase,
-    ReleaseAccountBalanceUseCase,
-    ConfirmAccountDebitUseCase,
-    CreditAccountBalanceUseCase,
+    // Use cases exported for tests/other contexts
+    CreateDigitalAccountUseCase,
+    ChangeDigitalAccountStatusUseCase,
+    ManageAccountBalanceUseCase,
+    ManageAccountMembersUseCase,
   ],
 })
 export class AccountModule {}

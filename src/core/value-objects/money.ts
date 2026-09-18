@@ -16,8 +16,20 @@ export class Money {
     return new Money(cents);
   }
 
+  public static fromCents(amountInCents: number): Money {
+    if (!Number.isInteger(amountInCents) || amountInCents < 0) {
+      throw new InvalidAmountError();
+    }
+
+    return new Money(amountInCents);
+  }
+
   get value(): number {
     return this._amountInCents / 100;
+  }
+
+  get amountInCents(): number {
+    return this._amountInCents;
   }
 
   public sum(other: Money): Money {

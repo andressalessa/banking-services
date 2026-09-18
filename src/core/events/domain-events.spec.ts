@@ -1,9 +1,10 @@
 import { AggregateRoot } from '../entities/aggregate-root';
 import type { UniqueEntityID } from '../entities/unique-entity-id';
+import type { DomainEvent } from './domain-event';
 import { DomainEvents } from './domain-events';
 import { jest } from '@jest/globals';
 
-class CustomAggregateCreated implements DomainEvents {
+class CustomAggregateCreated implements DomainEvent {
   public ocurredAt: Date;
   public aggregate: CustomAggregate;
 
@@ -27,24 +28,17 @@ class CustomAggregate extends AggregateRoot<null> {
 }
 
 describe('domain events', () => {
-  it('should be able to dispatch and listen to events', () => {
+  it('should be able to dispatch and listen to events', async () => {
     const callbackSpy = jest.fn();
 
-    // ex de evento: resposta criada
-
-    // Subscriber cadastrado (ouvindo o evento de "resposta criada")
     DomainEvents.register(callbackSpy, CustomAggregateCreated.name);
 
-    // estou criando uma resposta porém SEM salvar no banco
     const aggregate = CustomAggregate.create();
 
-    // estou assegurando que o evento foi criado porém não foi disparado
     expect(aggregate.domainEvents).toHaveLength(1);
 
-    // estou salvando a resposta no banco de dados e assim disparando o evento
-    DomainEvents.dispatchEventsForAggregate(aggregate.id);
+    await DomainEvents.dispatchEventsForAggregate(aggregate.id);
 
-    // o subscriber ouve o evento e faz o que precisa ser feito com o dado
     expect(callbackSpy).toHaveBeenCalled();
     expect(aggregate.domainEvents).toHaveLength(0);
   });

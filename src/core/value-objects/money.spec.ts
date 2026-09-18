@@ -41,4 +41,15 @@ describe('Money', () => {
     const money2 = Money.create(100);
     expect(money.equals(money2)).toBe(true);
   });
+
+  it('should create money from cents', () => {
+    const money = Money.fromCents(10050);
+
+    expect(money.value).toBe(100.5);
+    expect(money.amountInCents).toBe(10050);
+  });
+
+  it('should throw when creating money from negative cents', () => {
+    expect(() => Money.fromCents(-1)).toThrow(new InvalidAmountError());
+  });
 });

@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { AccountHolder } from '../../domain/value-objects/account-holder';
 import { BankIdentity } from '../../domain/value-objects/bank-identity';
 import { Member } from '../../domain/entities/member';
@@ -16,6 +17,7 @@ type CreateDigitalAccountResponse = Either<
   { digitalAccount: DigitalAccount }
 >;
 
+@Injectable()
 export class CreateDigitalAccountUseCase {
   constructor(private digitalAccountRepository: DigitalAccountRepository) {}
 

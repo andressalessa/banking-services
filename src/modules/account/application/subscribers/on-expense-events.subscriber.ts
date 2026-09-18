@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { DomainEvents } from '@/core/events/domain-events';
 import { EventHandler } from '@/core/events/event-handler';
 import { logDomainEventHandlerFailure } from '@/core/events/log-domain-event-handler-failure';
@@ -24,6 +25,7 @@ import { ManageAccountBalanceUseCase } from '../use-cases/manage-account-balance
  * - ExpenseCancelled → Release reserved balance (conditional)
  * - ExpenseRefunded → Credit balance back
  */
+@Injectable()
 export class OnExpenseEvents implements EventHandler {
   constructor(
     private readonly manageAccountBalance: ManageAccountBalanceUseCase,

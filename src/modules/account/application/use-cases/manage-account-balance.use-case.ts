@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { DomainEvents } from '@/core/events/domain-events';
@@ -34,6 +35,7 @@ type CreditOperationResponse = Either<
  * 3. Save account
  * 4. Dispatch domain events
  */
+@Injectable()
 export class ManageAccountBalanceUseCase {
   constructor(private readonly accounts: DigitalAccountRepository) {}
 

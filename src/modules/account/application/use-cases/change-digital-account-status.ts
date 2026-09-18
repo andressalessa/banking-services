@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { DomainEvents } from '@/core/events/domain-events';
@@ -16,6 +17,7 @@ type ChangeDigitalAccountStatusResponse = Either<
   void
 >;
 
+@Injectable()
 export class ChangeDigitalAccountStatusUseCase {
   constructor(
     private readonly digitalAccountRepository: DigitalAccountRepository,

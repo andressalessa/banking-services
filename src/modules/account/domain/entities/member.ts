@@ -1,5 +1,8 @@
 import { Entity } from '@/core/entities/entity';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
+import { CPF } from '@/core/value-objects/cpf';
+import { Email } from '@/core/value-objects/email';
+import { Phone } from '@/core/value-objects/phone';
 import { Optional } from '@/core/types/optional';
 
 export enum MemberRole {
@@ -14,6 +17,10 @@ export enum MemberStatus {
 
 export interface MemberProps {
   personId: UniqueEntityID;
+  fullName?: string;
+  cpf?: CPF;
+  email?: Email;
+  phone?: Phone;
   role: MemberRole;
   status: MemberStatus;
   createdAt: Date;
@@ -36,6 +43,22 @@ export class Member extends Entity<MemberProps> {
 
   get personId(): UniqueEntityID {
     return this.props.personId;
+  }
+
+  get fullName(): string | undefined {
+    return this.props.fullName;
+  }
+
+  get cpf(): CPF | undefined {
+    return this.props.cpf;
+  }
+
+  get email(): Email | undefined {
+    return this.props.email;
+  }
+
+  get phone(): Phone | undefined {
+    return this.props.phone;
   }
 
   get role(): MemberRole {

@@ -1,5 +1,4 @@
-import { cnpj } from 'cpf-cnpj-validator';
-import { InvalidCnpjError } from '../errors/invalid-cnpj-error';
+import { CNPJ } from '@/core/value-objects/cnpj';
 import { RequiredLegalNameError } from '../errors/required-legal-name-error';
 import { RequiredTradeNameError } from '../errors/required-trade-name-error';
 
@@ -10,21 +9,22 @@ export interface AccountHolderProps {
 }
 
 export class AccountHolder {
-  private readonly _cnpj: string;
+  private readonly _cnpj: CNPJ;
   private readonly _legalName: string;
   private readonly _tradeName: string;
 
-  private constructor(props: AccountHolderProps) {
-    this._cnpj = props.cnpj;
-    this._legalName = props.legalName;
-    this._tradeName = props.tradeName;
+  private constructor(cnpj: CNPJ, legalName: string, tradeName: string) {
+    this._cnpj = cnpj;
+    this._legalName = legalName;
+    this._tradeName = tradeName;
+    Object.freeze(this);
   }
 
   public static create(props: AccountHolderProps): AccountHolder {
-    const sanitizedCnpj = props.cnpj.replace(/[^\w]/g, '');
+    const cnpjOrError = CNPJ.create(props.cnpj);
 
-    if (!cnpj.isValid(sanitizedCnpj)) {
-      throw new InvalidCnpjError();
+    if (cnpjOrError.isLeft()) {
+      throw cnpjOrError.value;
     }
 
     const legalName = props.legalName.trim();
@@ -38,28 +38,28 @@ export class AccountHolder {
       throw new RequiredTradeNameError();
     }
 
-    return new AccountHolder({
-      cnpj: sanitizedCnpj,
-      legalName,
-      tradeName,
-    });
+    return new AccountHolder(cnpjOrError.value, legalName, tradeName);
   }
 
-  get cnpj() {
+  get cnpj(): string {
+    return this._cnpj.value;
+  }
+
+  get cnpjVO(): CNPJ {
     return this._cnpj;
   }
 
-  get legalName() {
+  get legalName(): string {
     return this._legalName;
   }
 
-  get tradeName() {
+  get tradeName(): string {
     return this._tradeName;
   }
 
   public equals(other: AccountHolder): boolean {
     return (
-      this._cnpj === other._cnpj &&
+      this._cnpj.equals(other._cnpj) &&
       this._legalName === other._legalName &&
       this._tradeName === other._tradeName
     );

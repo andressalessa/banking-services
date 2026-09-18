@@ -1,5 +1,5 @@
 import { AccountHolder } from './account-holder';
-import { InvalidCnpjError } from '../errors/invalid-cnpj-error';
+import { InvalidCnpjError } from '@/core/errors/invalid-cnpj-error';
 import { RequiredLegalNameError } from '../errors/required-legal-name-error';
 import { RequiredTradeNameError } from '../errors/required-trade-name-error';
 

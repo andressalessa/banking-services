@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================================
+// ACCOUNT BOUNDED CONTEXT
+// =============================================================================
+
+/// Conta Digital (Aggregate Root)
+model DigitalAccount {
+  id                     String        @id @db.Uuid
+  holder_cnpj            String        @db.VarChar(14)
+  holder_legal_name      String        @db.VarChar(255)
+  holder_trade_name      String        @db.VarChar(255)
+  balance_cents          BigInt        @default(0)
+  reserved_balance_cents BigInt        @default(0)
+  currency               String        @default("BRL") @db.VarChar(3)
+  status                 AccountStatus @default(PENDING)
+
+  // Bank Identity (embedded VO)
+  bank_code           String @db.VarChar(3)
+  bank_branch         String @db.VarChar(10)
+  bank_account_number String @db.VarChar(20)
+  external_account_id String @db.VarChar(255)
+
+  members Member[]
+
+  created_at DateTime  @default(now()) @db.Timestamptz
+  updated_at DateTime  @default(now()) @updatedAt @db.Timestamptz
+  deleted_at DateTime? @db.Timestamptz
+
+  @@index([holder_cnpj])
+  @@index([status])
+  @@index([deleted_at])
+  @@map("accounts")
+}
+
+enum AccountStatus {
+  PENDING
+  VALIDATED
+  ACTIVE
+  BLOCKED
+  CLOSED
+
+  @@map("account_status")
+}
+
+/// Membro da Conta (Entity)
+model Member {
+  id         String         @id @db.Uuid
+  account_id String         @db.Uuid
+  account    DigitalAccount @relation(fields: [account_id], references: [id])
+
+  person_id String       @db.Uuid
+  full_name String?      @db.VarChar(255)
+  cpf       String?      @db.VarChar(11)
+  email     String?      @db.VarChar(77)
+  phone     String?      @db.VarChar(16)
+  role      MemberRole
+  status    MemberStatus @default(ACTIVE)
+
+  created_at DateTime  @default(now()) @db.Timestamptz
+  updated_at DateTime  @default(now()) @updatedAt @db.Timestamptz
+  deleted_at DateTime? @db.Timestamptz
+
+  @@unique([account_id, person_id])
+  @@index([cpf])
+  @@index([account_id, status])
+  @@index([person_id])
+  @@map("members")
+}
+
+enum MemberRole {
+  ADMIN
+  COLLABORATOR
+
+  @@map("member_role")
+}
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+
+  @@map("member_status")
+}
+
+// =============================================================================
+// PAYMENT BOUNDED CONTEXT
+// =============================================================================
+
+/// Despesa (Aggregate Root)
+model Expense {
+  id         String @id @db.Uuid
+  account_id String @db.Uuid
+
+  // Payee (embedded VO)
+  payee_name        String  @db.VarChar(255)
+  payee_tax_id      String  @db.VarChar(14)
+  payee_tax_id_type String  @db.VarChar(10)
+  payee_email       String? @db.VarChar(77)
+
+  amount_cents BigInt
+  currency     String @default("BRL") @db.VarChar(3)
+
+  // PaymentDetails (PIX | BOLETO | BANK_TRANSFER)
+  payment_details Json @db.JsonB
+
+  // Approval workflow (denormalized status for queries)
+  required_approvals_count Int            @default(1)
+  approval_status          ApprovalStatus @default(PENDING)
+
+  status   ExpenseStatus @default(DRAFT)
+  due_date DateTime      @db.Timestamptz
+  paid_at  DateTime?     @db.Timestamptz
+
+  decisions ExpenseDecision[]
+
+  created_at DateTime  @default(now()) @db.Timestamptz
+  updated_at DateTime  @default(now()) @updatedAt @db.Timestamptz
+  deleted_at DateTime? @db.Timestamptz
+
+  @@index([account_id])
+  @@index([status])
+  @@index([due_date])
+  @@index([created_at])
+  @@index([payee_tax_id])
+  @@index([deleted_at])
+  @@map("expenses")
+}
+
+enum ExpenseStatus {
+  DRAFT
+  SCHEDULED
+  PROCESSING
+  PAID
+  REFUNDED
+  CANCELLED
+  FAILED
+
+  @@map("expense_status")
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("approval_status")
+}
+
+/// Decisão de Aprovação (Entity persistida; VO no domínio)
+model ExpenseDecision {
+  id         String  @id @db.Uuid
+  expense_id String  @db.Uuid
+  expense    Expense @relation(fields: [expense_id], references: [id], onDelete: Cascade)
+
+  approver_person_id String         @db.Uuid
+  decision_status    DecisionStatus
+  rejection_reason   String?        @db.Text
+
+  created_at DateTime @default(now()) @db.Timestamptz
+
+  @@unique([expense_id, approver_person_id])
+  @@index([expense_id])
+  @@index([approver_person_id])
+  @@index([created_at])
+  @@map("expense_decisions")
+}
+
+enum DecisionStatus {
+  APPROVED
+  REJECTED
+
+  @@map("approval_decision")
+}

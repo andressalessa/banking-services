@@ -9,27 +9,19 @@ const { config: tsconfig } = ts.readConfigFile(
 const paths = tsconfig?.compilerOptions?.paths ?? {};
 
 const config: Config = {
+  displayName: 'integration',
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: '.',
-  testRegex: '.*\\.spec\\.ts$',
+  testRegex: 'prisma-.*\\.repository\\.spec\\.ts$',
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
   transformIgnorePatterns: ['node_modules/(?!@nestjs/)'],
   moduleNameMapper: pathsToModuleNameMapper(paths, { prefix: '<rootDir>/' }),
-  collectCoverageFrom: [
-    'src/**/*.(t|j)s',
-    'libs/**/*.(t|j)s',
-    'apps/**/*.(t|j)s',
-  ],
-  coverageDirectory: './coverage',
   testEnvironment: 'node',
   setupFiles: ['<rootDir>/test/jest-setup-nestjs.ts'],
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/dist/',
-    'prisma-.*\\.repository\\.spec\\.ts$',
-  ],
+  testTimeout: 60000,
+  maxWorkers: 1,
 };
 
 export default config;
